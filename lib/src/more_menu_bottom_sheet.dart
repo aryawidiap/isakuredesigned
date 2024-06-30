@@ -1,9 +1,18 @@
 import 'package:flutter/material.dart';
 
 import 'menu_list_page.dart';
+import 'service_menu.dart';
 
-class MoreMenuBottomSheet extends StatelessWidget {
+class MoreMenuBottomSheet extends StatefulWidget {
   const MoreMenuBottomSheet({super.key});
+
+  @override
+  State<MoreMenuBottomSheet> createState() => _MoreMenuBottomSheetState();
+}
+
+class _MoreMenuBottomSheetState extends State<MoreMenuBottomSheet> {
+  List<ServiceMenu> temporaryFavoriteMenus = <ServiceMenu>[];
+  List<ServiceMenu> temporaryAllMenus = <ServiceMenu>[];
 
   @override
   Widget build(BuildContext context) {

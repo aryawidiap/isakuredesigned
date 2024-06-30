@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:isakuredesigned/src/app_state.dart';
-import 'package:isakuredesigned/src/more_menu_bottom_sheet.dart';
 import 'package:provider/provider.dart';
 
 import 'menu_card.dart';
+import 'menu_list_page.dart';
 
 class HomePage extends StatelessWidget {
   @override
@@ -87,7 +87,7 @@ class ProfileAndCredit extends StatelessWidget {
   }
 }
 
-class FavoriteMenuSection extends StatelessWidget {
+class FavoriteMenuSection extends StatefulWidget {
   const FavoriteMenuSection({
     super.key,
     required this.appState,
@@ -96,15 +96,59 @@ class FavoriteMenuSection extends StatelessWidget {
   final AppState appState;
 
   @override
+  State<FavoriteMenuSection> createState() => _FavoriteMenuSectionState();
+}
+
+class _FavoriteMenuSectionState extends State<FavoriteMenuSection> {
+  void _openBottomSheet(AppState appState) async {
+    await showModalBottomSheet(
+      useRootNavigator: false,
+      isScrollControlled: true,
+      context: context,
+      builder: (_) => DraggableScrollableSheet(
+          expand: false, builder: (_, controller) => MenuListPage()),
+    );
+
+    appState.resetEditFavoritMenu();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    var appState = context.watch<AppState>();
+
     return Wrap(
       children: [
-        ...appState.favoriteMenus.map((m) => MenuCard(
+        ...widget.appState.favoriteMenus.map((m) => MenuCard(
               menu: m,
               favoriteState: 2,
               showButton: false,
             )),
-        MoreMenuBottomSheet(),
+        SizedBox(
+          width: 125,
+          child: GestureDetector(
+            onTap: () {
+              _openBottomSheet(appState);
+            },
+            child: Card(
+              color: Colors.grey[50],
+              child: Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: Column(
+                  children: [
+                    SizedBox(
+                      width: 80,
+                      height: 80,
+                      child: Icon(Icons.apps_rounded),
+                    ),
+                    Text(
+                      'Lihat semua',
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
       ],
     );
   }

@@ -58,6 +58,7 @@ class MenuCard extends StatelessWidget {
             child: Column(
               children: [
                 IconButton(
+                  /// With a toggle button
                   iconSize: 25,
                   icon: buttonIcon,
                   onPressed: () {
@@ -96,6 +97,7 @@ class MenuCard extends StatelessWidget {
               padding: const EdgeInsets.all(10.0),
               child: Column(
                 children: [
+                  /// Without a toggle button
                   Image(
                     image: menu.icon,
                     width: 80,

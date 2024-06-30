@@ -3,31 +3,66 @@ import 'package:isakuredesigned/src/app_state.dart';
 import 'package:isakuredesigned/src/menu_card.dart';
 import 'package:provider/provider.dart';
 
+import 'service_menu.dart';
+
 class MenuListPage extends StatelessWidget {
+  const MenuListPage({
+    super.key,
+  });
+
+  Column buildSection(String sectionTitle, TextStyle sectionSubtitleStyle,
+      List<ServiceMenu> sectionMenus, List<ServiceMenu> favoriteMenus) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          sectionTitle,
+          style: sectionSubtitleStyle,
+        ),
+        Wrap(
+          alignment: WrapAlignment.start,
+          children: [
+            ...sectionMenus.map((m) => MenuCard(
+                  menu: m,
+                  favoriteState: favoriteMenus.contains(m) ? 1 : 0,
+                  showButton: true,
+                )),
+          ],
+        ),
+      ],
+    );
+  }
+
+  List<Widget> buildAllMenus(
+      {required Map<String, List<ServiceMenu>> allMenus,
+      required TextStyle sectionSubtitleStyle,
+      required List<ServiceMenu> favoriteMenus}) {
+    List<Widget> allMenuColumns = [];
+
+    for (var serviceGroup in allMenus.keys) {
+      allMenuColumns.add(buildSection(serviceGroup, sectionSubtitleStyle,
+          allMenus[serviceGroup]!, favoriteMenus));
+      allMenuColumns.add(SizedBox(
+        height: 20,
+      ));
+    }
+
+    return allMenuColumns;
+  }
+
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<AppState>();
     final theme = Theme.of(context);
     final sectionTitleStyle = theme.textTheme.titleLarge;
     final sectionSubtitleStyle = theme.textTheme.titleMedium;
-    var showFavoriteMenu = <MenuCard>[];
+
+    List<ServiceMenu> localFavoriteMenus = <ServiceMenu>[];
+
+    localFavoriteMenus = [...appState.favoriteMenus];
 
     if (appState.isEditFavoriteMenu) {
-      showFavoriteMenu = appState.tempFavoriteMenus
-          .map((m) => MenuCard(
-                menu: m,
-                favoriteState: 2,
-                showButton: true,
-              ))
-          .toList();
-    } else {
-      showFavoriteMenu = appState.favoriteMenus
-          .map((m) => MenuCard(
-                menu: m,
-                favoriteState: 2,
-                showButton: true,
-              ))
-          .toList();
+      localFavoriteMenus = [...appState.temporaryFavoriteMenus];
     }
 
     return ListView(
@@ -73,7 +108,13 @@ class MenuListPage extends StatelessWidget {
             ),
             Wrap(
               alignment: WrapAlignment.start,
-              children: showFavoriteMenu,
+              children: localFavoriteMenus
+                  .map((m) => MenuCard(
+                        menu: m,
+                        favoriteState: 2,
+                        showButton: true,
+                      ))
+                  .toList(),
             )
           ],
         ),
@@ -81,6 +122,7 @@ class MenuListPage extends StatelessWidget {
           height: 20,
         ),
         Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
@@ -93,72 +135,11 @@ class MenuListPage extends StatelessWidget {
             SizedBox(
               height: 20,
             ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Top up',
-                  style: sectionSubtitleStyle,
-                ),
-                Wrap(
-                  alignment: WrapAlignment.start,
-                  children: [
-                    ...appState.allMenus.map((m) => MenuCard(
-                          menu: m,
-                          favoriteState:
-                              appState.tempFavoriteMenus.contains(m) ? 1 : 0,
-                          showButton: true,
-                        )),
-                  ],
-                ),
-              ],
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Pendaftaran',
-                  style: sectionSubtitleStyle,
-                ),
-                Wrap(
-                  alignment: WrapAlignment.start,
-                  children: [
-                    ...appState.allMenus.map((m) => MenuCard(
-                          menu: m,
-                          favoriteState:
-                              appState.tempFavoriteMenus.contains(m) ? 1 : 0,
-                          showButton: true,
-                        )),
-                  ],
-                ),
-              ],
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Tagihan',
-                  style: sectionSubtitleStyle,
-                ),
-                Wrap(
-                  alignment: WrapAlignment.start,
-                  children: [
-                    ...appState.allMenus.map((m) => MenuCard(
-                          menu: m,
-                          favoriteState:
-                              appState.tempFavoriteMenus.contains(m) ? 1 : 0,
-                          showButton: true,
-                        )),
-                  ],
-                ),
-              ],
-            ),
+            ...buildAllMenus(
+                allMenus: appState.allMenusTest,
+                sectionSubtitleStyle: sectionSubtitleStyle!,
+                favoriteMenus: localFavoriteMenus),
+            Text('sungai percobaan'),
           ],
         ),
       ],
